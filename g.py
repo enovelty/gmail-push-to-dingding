@@ -307,7 +307,8 @@ if __name__ == '__main__':
     logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.CRITICAL)
 
     with open('access_token', 'r') as f:
-            access_token = f.read()
+        # access_token 长度为 64 字节，不填写长度在 linux 下会多读一个 \n
+        access_token = f.read(64)
 
     try:
         main('enovelty', float(sys.argv[1]), access_token)
