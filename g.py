@@ -220,7 +220,7 @@ def get_info(msg):
 def send_to_ding(info_dict, error=False):
     with open('access_token', 'r') as f:
             access_token = f.read()
-    url = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'
+    url = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'.encode('utf-8')
     headers = {'Content-Type': 'application/json'}
     if error:
         data = '''
