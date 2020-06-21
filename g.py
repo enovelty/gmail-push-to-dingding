@@ -220,6 +220,7 @@ def get_info(msg):
 def send_to_ding(info_dict, access_token, error=False):
     # TODO: linux 下的拼接有问题
     url = 'https://oapi.dingtalk.com/robot/send?access_token={}'.format(access_token)
+    logging.info(url)
     headers = {'Content-Type': 'application/json'}
     if error:
         data = '''
