@@ -217,10 +217,9 @@ def get_info(msg):
 
 # 发消息到钉钉机器人
 # data 里面不能有 "
-def send_to_ding(info_dict, error=False):
-    with open('access_token', 'r') as f:
-            access_token = f.read()
-    url = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}'.encode('utf-8')
+def send_to_ding(info_dict, access_token, error=False):
+    # TODO: linux 下的拼接有问题
+    url = 'https://oapi.dingtalk.com/robot/send?access_token={}'.format(access_token)
     headers = {'Content-Type': 'application/json'}
     if error:
         data = '''
@@ -257,7 +256,7 @@ def get_time():
     return(dt)
 
 # 获取收件箱中的未读邮件，发钉钉通知
-def main(acc, pull_interval):
+def main(acc, pull_interval, access_token):
     if os.path.exists('history_id') == False:
         print('请创建 history_id 文件')
     if os.path.exists('access_token') == False:
@@ -292,7 +291,7 @@ def main(acc, pull_interval):
             messages = get_messages(service, messages_ids)
             for m in messages:
                 msg = get_info(m)
-                send_to_ding(msg)
+                send_to_ding(msg, access_token)
             print()
             with open('history_id', 'w') as f:
                 f.write(history_id)
@@ -306,11 +305,14 @@ if __name__ == '__main__':
     # logging.basicConfig(level=logging.INFO)
     logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.CRITICAL)
 
+    with open('access_token', 'r') as f:
+            access_token = f.read()
+
     try:
-        main('enovelty', float(sys.argv[1]))
+        main('enovelty', float(sys.argv[1]), access_token)
     # 运行出错时，推送到钉钉
     except BaseException as e:
         # 输出完整 traceback
         print(get_time())
         traceback.print_exc()
-        send_to_ding(traceback.format_exc(), True)
+        send_to_ding(traceback.format_exc(), access_token, True)
