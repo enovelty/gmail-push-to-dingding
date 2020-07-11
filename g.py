@@ -163,7 +163,7 @@ def get_message(service, msg_id, user_id='me', msg_format='raw'):
         message = service.users().messages().get(userId=user_id, id=msg_id,
                                                  format=msg_format).execute()
         msg_str = base64.urlsafe_b64decode(message['raw'].encode('ASCII'))
-        msg = Parser().parsestr(msg_str.decode('ASCII'))
+        msg = Parser().parsestr(msg_str.decode('utf-8'))
         
         return msg
 
