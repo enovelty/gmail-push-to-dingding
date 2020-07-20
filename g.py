@@ -291,8 +291,9 @@ def main(acc, pull_interval, access_token):
         if history_id != old_history_id:
             messages = get_messages(service, messages_ids)
             for m in messages:
-                msg = get_info(m)
-                send_to_ding(msg, access_token)
+                if m != None:
+                    msg = get_info(m)
+                    send_to_ding(msg, access_token)
             print()
             with open('history_id', 'w') as f:
                 f.write(history_id)
