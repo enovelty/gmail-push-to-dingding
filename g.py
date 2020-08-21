@@ -256,6 +256,12 @@ def get_time():
     dt = dt.astimezone(timezone(timedelta(hours=8)))
     return(dt)
 
+# 定时提醒任务，同时用于确定程序运行状态
+def reminder(access_token):
+    info_dict = {'Subject':'填工时', 'From':''}
+    send_to_ding(info_dict, access_token)
+
+
 # 获取收件箱中的未读邮件，发钉钉通知
 def main(acc, pull_interval, access_token):
     if os.path.exists('history_id') == False:
@@ -284,6 +290,8 @@ def main(acc, pull_interval, access_token):
         with open('history_id', 'r') as f:
             old_history_id = f.read()
 
+    schedule.every().day.at('21:00').do(reminder, access_token)
+
     while True:
         print(get_time())
         messages_ids, history_id = check_new_email(service, old_history_id)
@@ -301,6 +309,8 @@ def main(acc, pull_interval, access_token):
         else:
             print('\tNo new email.\n')
 
+        # 开启定时任务的情况下，如果不设置循环的 interval，会致 CPU 占用高
+        schedule.run_pending()
         time.sleep(pull_interval)
 
 if __name__ == '__main__':
