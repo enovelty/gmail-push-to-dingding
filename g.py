@@ -27,8 +27,10 @@ from apiclient import errors
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-# 获取gmail授权
+
 def get_credit(credential_json_name, token_file_name):
+    '''获取gmail授权
+    '''
     creds = None
 
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -53,8 +55,9 @@ def get_credit(credential_json_name, token_file_name):
     return build('gmail', 'v1', credentials=creds)
 
 
-# 多gmail账号转换
 def get_account(acc):
+    '''多gmail账号转换
+    '''
     # token.pickle:  enovelty  (credentials_jk.json)
     # token.pickle2: hallel@gmail.com (credentials_hallel.json)
   
@@ -66,8 +69,9 @@ def get_account(acc):
     return service_accounts[acc]
 
 
-# 获取gmail的label名称，以及对应的label id
 def get_labels(service):
+    '''获取gmail的label名称，以及对应的label id
+    '''
     output = {}
     results = service.users().labels().list(userId='me').execute()
     labels = results.get('labels', [])
@@ -81,9 +85,10 @@ def get_labels(service):
     return output
 
 
-# 通过条件查询，获取gmail邮件，用空格分隔不同运算符
-# Gmail 中可使用的搜索运算符：https://support.google.com/mail/answer/7190?hl=zh-Hans
 def get_messages_by_query(service, query='', label_ids=['INBOX'], user_id='me'):
+    '''通过条件查询，获取gmail邮件，用空格分隔不同运算符
+    Gmail 中可使用的搜索运算符：https://support.google.com/mail/answer/7190?hl=zh-Hans
+    '''
     try:
         response = service.users().messages().list(userId=user_id,
                                                    labelIds=label_ids,
@@ -103,8 +108,9 @@ def get_messages_by_query(service, query='', label_ids=['INBOX'], user_id='me'):
         print('An error occurred: %s' % error)
 
 
-# 通过lable id获取gmail邮件
 def get_messages_by_labels(service, label_ids=[], user_id='me'):
+    '''通过lable id获取gmail邮件
+    '''
     try:
         response = service.users().messages().list(userId=user_id,
                                                    labelIds=label_ids).execute()
@@ -123,13 +129,17 @@ def get_messages_by_labels(service, label_ids=[], user_id='me'):
     except errors.HttpError as error:
         print('An error occurred: %s' % error)
 
-# 通过 historyId 检查新邮件
-# 返回新邮件 id，没有则返回 []；返回 HistoryId，没有更新则返回 startHistoryId
-# start_history_id 不能取 1，我测试返回 404
-# maxResults 因为钉钉每个机器人每分钟最多发送 20 条
+
 def check_new_email(service, startHistoryId, user_id='me',
                     historyTypes='messageAdded', labelId='INBOX',
                     maxResults=20):
+    """通过 historyId 检查新邮件
+    返回新邮件 id，没有则返回 []；返回 HistoryId，没有更新则返回 startHistoryId
+
+    Args:
+        start_history_id: 不能取 1，我测试返回 404
+        maxResults: 因为钉钉每个机器人每分钟最多发送 20 条
+    """
     try:
         history = (service.users().history().list(userId=user_id,
                                                 historyTypes=historyTypes,
@@ -158,13 +168,15 @@ def check_new_email(service, startHistoryId, user_id='me',
     except errors.HttpError as error:
         print ('An error occurred: %s' % error)
 
-# 通过邮件id，获取邮件内容
+
 def get_message(service, msg_id, user_id='me', msg_format='raw'):
+    '''通过邮件id，获取邮件内容
+    '''
     try:
         message = service.users().messages().get(userId=user_id, id=msg_id,
                                                  format=msg_format).execute()
         msg_str = base64.urlsafe_b64decode(message['raw'].encode('ASCII'))
-        msg = Parser().parsestr(msg_str.decode('utf-8'))
+        msg = Parser().parsestr(msg_str.decode('utf-8', errors='ignore'))
         
         return msg
 
@@ -172,8 +184,9 @@ def get_message(service, msg_id, user_id='me', msg_format='raw'):
         print('An error occurred: %s' % error)
 
 
-# 通过邮件id数组，获取邮件数组
 def get_messages(service, message_ids):
+    '''通过邮件id数组，获取邮件数组
+    '''
     output = []
 
     for message_id in message_ids:
@@ -183,8 +196,9 @@ def get_messages(service, message_ids):
     return output
 
 
-# 猜测邮件编码
 def guess_charset(msg):
+    '''猜测邮件编码
+    '''
     charset = msg.get_charset()
     if charset is None:
         content_type = msg.get('Content-Type', '').lower()
@@ -193,15 +207,19 @@ def guess_charset(msg):
             charset = content_type[pos + 8:].strip()
     return charset
 
-# 邮件解码
+
 def decode_str(s):
+    '''邮件解码
+    '''
     value, charset = decode_header(s)[0]
     if charset:
         value = value.decode(charset)
     return value
 
-# 获取邮件主题、发件人信息
+
 def get_info(msg):
+    '''获取邮件主题、发件人信息
+    '''
     info_dict = {}
     for header in ['Subject', 'From']:
         value = msg.get(header, '')
@@ -216,9 +234,11 @@ def get_info(msg):
 
     return info_dict
 
-# 发消息到钉钉机器人
-# data 里面不能有 "
+
 def send_to_ding(info_dict, access_token, error=False):
+    '''发消息到钉钉机器人
+    data 里面不能有 "
+    '''
     # TODO: linux 下的拼接有问题
     url = 'https://oapi.dingtalk.com/robot/send?access_token={}'.format(access_token)
     logging.info(url)
@@ -251,20 +271,25 @@ def send_to_ding(info_dict, access_token, error=False):
     
     print('\t' + resp.text)
 
-# UTC+8 时间
+
 def get_time():
+    '''UTC+8 时间
+    '''
     dt = datetime.utcnow().replace(tzinfo=timezone.utc)
     dt = dt.astimezone(timezone(timedelta(hours=8)))
     return(dt)
 
-# 定时提醒任务，同时用于确定程序运行状态
+
 def reminder(access_token):
+    '''定时提醒任务，同时用于确定程序运行状态
+    '''
     info_dict = {'Subject':'填工时', 'From':''}
     send_to_ding(info_dict, access_token)
 
 
-# 获取收件箱中的未读邮件，发钉钉通知
 def main(acc, pull_interval, access_token):
+    '''获取收件箱中的未读邮件，发钉钉通知
+    '''
     if os.path.exists('history_id') == False:
         print('请创建 history_id 文件')
     if os.path.exists('access_token') == False:
