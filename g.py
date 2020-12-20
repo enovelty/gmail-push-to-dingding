@@ -156,7 +156,8 @@ def check_new_email(service, startHistoryId, user_id='me',
                                                 labelId=labelId,
                                                 maxResults=maxResults,
                                                 pageToken=page_token).execute())
-            changes.extend(history['history'])
+            if 'history' in history:
+                changes.extend(history['history'])
 
         messages_ids = []
         # 有新邮件才取 id
