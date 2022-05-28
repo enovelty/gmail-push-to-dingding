@@ -15,7 +15,7 @@ nohup python3 -u g.py 300 >/dev/null 2>error.log &
 
 **先说下已经尝试的现成的软件。（测试时间 2020-06）**  
 首先当然要试试钉钉能不能登录 Gmail，Mac、Android 端都无法登录（当然代理是开着的），我登的邮箱是 Gmail 的企业邮箱。Android 端开代理可以登录，但属于未验证的应用，Google 拒绝登录。  
-![](https://pic4.zhimg.com/80/v2-e22c40dfbfd7eea92a0d6dd0202cc66f_1440w.jpg)
+![](https://pic4.zhimg.com/80/v2-e22c40dfbfd7eea92a0d6dd0202cc66f_1440w.jpg)  
 用 Gmail 生成的应用专用密码登录，会收到邮件：  
 ![](https://pic4.zhimg.com/80/v2-12dd7915a6598b7af9ebe6ad1fb8155f_1440w.jpg])
 
@@ -89,7 +89,7 @@ curl 'https://oapi.dingtalk.com/robot/send?access_token=token' \
 ## Gmail API 访问授权
 
 第一次运行程序后，会弹出一个页面，此时需要把权限授予应用。  
-[查看 Google 帐号第三方访问权限](https://myaccount.google.com/security-checkup)
+[查看 Google 帐号第三方访问权限](https://myaccount.google.com/security-checkup)  
 ![](https://pic3.zhimg.com/80/v2-9967829af2bb983cafe39e6ccc86078e_1440w.jpg)
 
 使用 virtualenv（可选）：source venv/bin/activate
