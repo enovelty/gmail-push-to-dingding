@@ -32,7 +32,10 @@ QQ 邮箱：没亲自用，据说推送也有问题
 
 # 开启 Gmail API
 
-主要参考 这篇文章 即可，Google 现在支持中文界面。  
+主要参考  
+**[Python 读取gmail, Python 搜索gmail, Python操作gmail, How to access Gmail using Python](https://justcode.ikeepstudying.com/2019/09/python-%E8%AF%BB%E5%8F%96gmail-python-%E6%90%9C%E7%B4%A2gmail-python%E6%93%8D%E4%BD%9Cgmail-how-to-access-gmail-using-python/)**
+
+这篇即可，Google 现在支持中文界面。  
 印象中需要注意的部分是选择创建个人或组织的应用，我的是 Gmail 企业邮箱，所以创建的应用是属于组织的，个人的应用我不确定能不能以及如何创建。  
 本来我是打算这部分也全部自己截图做一遍的，但写文章时距离我完成程序已经过了 2 个月，就不想写这部分了。
 
